@@ -2,7 +2,9 @@ package top.ourisland.invertotimer.runtime.timer;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import org.slf4j.Logger;
+import top.ourisland.invertotimer.InvertoTimer;
 import top.ourisland.invertotimer.action.Action;
 import top.ourisland.invertotimer.config.model.ActionConfig;
 import top.ourisland.invertotimer.config.model.GlobalConfig;
@@ -19,9 +21,12 @@ import top.ourisland.invertotimer.showcase.Showcase;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 final class TimerInstance {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private final InvertoTimer plugin;
 
     private final ProxyServer proxy;
     private final Logger logger;
@@ -29,9 +34,12 @@ final class TimerInstance {
     private final TimerConfig cfg;
     private final ZoneId zoneId;
 
-    private final List<ScheduledAction> scheduledActions = new ArrayList<>();
+    private final List<ScheduledTask> actionTasks = new ArrayList<>();
 
     private final Map<String, ShowcaseSlot> showcaseSlots = new HashMap<>();
+
+    private Instant expireAt = Instant.EPOCH;
+
     private Cron5 cron;
     private LocalDateTime oneTime;
     private ZonedDateTime nextTarget;
@@ -44,7 +52,14 @@ final class TimerInstance {
 
     private RuntimeContext ctx;
 
-    TimerInstance(final ProxyServer proxy, final Logger logger, final TimerConfig cfg, final ZoneId zoneId) {
+    TimerInstance(
+            final InvertoTimer plugin,
+            final ProxyServer proxy,
+            final Logger logger,
+            final TimerConfig cfg,
+            final ZoneId zoneId
+    ) {
+        this.plugin = Objects.requireNonNull(plugin);
         this.proxy = proxy;
         this.logger = logger;
         this.cfg = cfg;
@@ -82,19 +97,27 @@ final class TimerInstance {
     }
 
     private void rebuildForNewTarget() {
-        scheduledActions.clear();
+        cancelActionTasks();
+
         showcaseSlots.clear();
         bossbarShowcase = null;
         bossBarConfig = null;
 
+        expireAt = Instant.EPOCH;
+
         if (nextTarget == null) return;
 
+        final Instant targetInstant = nextTarget.toInstant();
+        expireAt = targetInstant;
+
         for (ActionConfig ac : cfg.actions()) {
-            final Instant at = nextTarget.toInstant().plus(ac.shift());
+            final Instant at = targetInstant.plus(ac.shift());
             final Action action = ActionFactory.create(ac, ctx);
-            if (action != null) scheduledActions.add(new ScheduledAction(at, action));
+            if (action == null) continue;
+
+            scheduleAction(at, action);
+            if (at.isAfter(expireAt)) expireAt = at;
         }
-        scheduledActions.sort(Comparator.comparing(a -> a.at));
 
         for (Map.Entry<String, ShowcaseConfig> e : cfg.showcases().entrySet()) {
             final String key = e.getKey();
@@ -104,8 +127,10 @@ final class TimerInstance {
             ShowcaseType kind = ShowcaseType.fromKey(key);
             if (kind == null) continue;
 
-            Showcase showcase = ShowcaseFactory.create(key, sc, ctx, () -> progressFor(sc, lastNow == null ? Instant.now() : lastNow));
-
+            Showcase showcase = ShowcaseFactory.create(
+                    key, sc, ctx,
+                    () -> progressFor(sc, lastNow == null ? Instant.now() : lastNow)
+            );
             if (showcase == null) continue;
 
             ShowcaseSlot slot = new ShowcaseSlot(kind, sc, showcase);
@@ -148,6 +173,36 @@ final class TimerInstance {
         return out;
     }
 
+    private void cancelActionTasks() {
+        for (ScheduledTask t : actionTasks) {
+            try {
+                t.cancel();
+            } catch (Exception ignored) {
+            }
+        }
+        actionTasks.clear();
+    }
+
+    private void scheduleAction(final Instant at, final Action action) {
+        long delayMs = at.toEpochMilli() - System.currentTimeMillis();
+        if (delayMs < 0) delayMs = 0;
+
+        ScheduledTask task = proxy.getScheduler()
+                .buildTask(plugin, () -> {
+                    // ensure placeholders use near-real execution time
+                    lastNow = Instant.now();
+                    try {
+                        action.execute();
+                    } catch (Exception e) {
+                        logger.error("Failed executing action {} for timer {}", action.name(), cfg.id(), e);
+                    }
+                })
+                .delay(delayMs, TimeUnit.MILLISECONDS)
+                .schedule();
+
+        actionTasks.add(task);
+    }
+
     private float progressFor(final ShowcaseConfig sc, final Instant now) {
         if (nextTarget == null) return 1.0f;
         final Instant target = nextTarget.toInstant();
@@ -180,8 +235,6 @@ final class TimerInstance {
         this.lastGlobal = global;
 
         ensureNextTarget(now);
-
-        runDueActions(now);
         updateShowcases(now);
     }
 
@@ -195,22 +248,6 @@ final class TimerInstance {
         if (now.isAfter(getExpireTime())) {
             nextTarget = computeNextTarget(now);
             rebuildForNewTarget();
-        }
-    }
-
-    private void runDueActions(final Instant now) {
-        if (nextTarget == null) return;
-
-        for (ScheduledAction sa : scheduledActions) {
-            if (sa.executed) continue;
-            if (now.isBefore(sa.at)) break;
-
-            try {
-                sa.action.execute();
-            } catch (Exception e) {
-                logger.error("Failed executing action {} for timer {}", sa.action.name(), cfg.id(), e);
-            }
-            sa.executed = true;
         }
     }
 
@@ -248,11 +285,7 @@ final class TimerInstance {
     }
 
     private Instant getExpireTime() {
-        Instant lastAction = nextTarget == null ? Instant.EPOCH : nextTarget.toInstant();
-        for (ScheduledAction a : scheduledActions) {
-            if (a.at.isAfter(lastAction)) lastAction = a.at;
-        }
-        return lastAction.plusSeconds(2);
+        return expireAt.plusSeconds(2);
     }
 
     private boolean shouldShow(final ShowcaseConfig sc, final Instant now) {
@@ -290,14 +323,10 @@ final class TimerInstance {
         if (bossbarShowcase != null) bossbarShowcase.hideFrom(p);
     }
 
-    private static final class ScheduledAction {
-        final Instant at;
-        final Action action;
-        boolean executed;
-
-        ScheduledAction(final Instant at, final Action action) {
-            this.at = at;
-            this.action = action;
+    void dispose() {
+        cancelActionTasks();
+        if (bossbarShowcase != null) {
+            for (Player p : proxy.getAllPlayers()) bossbarShowcase.hideFrom(p);
         }
     }
 }

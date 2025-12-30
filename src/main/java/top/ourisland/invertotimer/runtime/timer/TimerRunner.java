@@ -38,12 +38,14 @@ public class TimerRunner {
     }
 
     public synchronized void reloadFromConfig() {
+        instances.values().forEach(TimerInstance::dispose);
+
         this.global = configs.getGlobalConfig();
         this.timerConfigs = configs.getTimers();
 
         instances.clear();
         for (String id : timerConfigs.keySet()) {
-            instances.put(id, new TimerInstance(proxy, logger, timerConfigs.get(id), global.zoneId()));
+            instances.put(id, new TimerInstance(plugin, proxy, logger, timerConfigs.get(id), global.zoneId()));
         }
     }
 
@@ -51,7 +53,7 @@ public class TimerRunner {
         if (tickTask != null) tickTask.cancel();
         tickTask = proxy.getScheduler()
                 .buildTask(plugin, this::tick)
-                .repeat(1, TimeUnit.SECONDS)
+                .repeat(250, TimeUnit.MILLISECONDS)
                 .schedule();
     }
 
