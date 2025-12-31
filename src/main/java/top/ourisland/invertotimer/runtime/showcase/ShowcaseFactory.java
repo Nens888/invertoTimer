@@ -23,7 +23,7 @@ public final class ShowcaseFactory {
             case "actionbar" -> new ActionbarShowcase(ctx, sc.text());
             case "text" -> new TextShowcase(ctx, sc.text());
             case "title" -> new TitleShowcase(ctx, sc.text(), sc.subtitle());
-            case "bossbar" -> new BossbarShowcase(ctx, sc.text(), bossbarProgress);
+            case "bossbar" -> new BossbarShowcase(ctx, sc.text(), sc.color(), bossbarProgress);
             default -> null;
         };
     }

@@ -10,11 +10,12 @@ public record ShowcaseConfig(
         Duration startAt,
         Duration interval,
         String text,
-        String subtitle
+        String subtitle,
+        String color
 ) {
     public static ShowcaseConfig fromYaml(final Object obj) {
-        if (obj instanceof String s) return new ShowcaseConfig(true, null, null, s, "");
-        if (!(obj instanceof Map<?, ?> m)) return new ShowcaseConfig(false, null, null, "", "");
+        if (obj instanceof String s) return new ShowcaseConfig(true, null, null, s, "", "");
+        if (!(obj instanceof Map<?, ?> m)) return new ShowcaseConfig(false, null, null, "", "", "");
 
         Object enObj = m.get("enabled");
         boolean enabled = enObj == null || Boolean.parseBoolean(String.valueOf(enObj));
@@ -29,6 +30,8 @@ public record ShowcaseConfig(
         Object subObj = m.get("subtitle");
         String subtitle = subObj == null ? "" : String.valueOf(subObj);
 
-        return new ShowcaseConfig(enabled, startAt, interval, text, subtitle);
+        String color = m.get("color") == null ? null : String.valueOf(m.get("color"));
+
+        return new ShowcaseConfig(enabled, startAt, interval, text, subtitle, color);
     }
 }

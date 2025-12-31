@@ -71,10 +71,17 @@ timers:
 
       # ------------------------------------------------------
       # bossbar showcase
+      #
+      # color (optional):
+      #   BossBar color name (case-insensitive).
+      #   Supported values:
+      #     pink | blue | red | green | yellow | purple | white
+      #   If omitted or invalid, defaults to blue.
       # ------------------------------------------------------
       bossbar:
         start-at: 1h
         interval: 1s
+        color: red
         # You can also use i18n:
         # text: "<gradient:gold:yellow>{i18n:timer.newyear.bossbar}</gradient> <white>{remaining}</white>"
         text: "New Year in {remaining}"
